@@ -10,7 +10,6 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
 
   MqttBloc() : super(MqttInitial()) {
     on<ConnectMqtt>(_connectToBroker);
-    on<SubscribeTopic>(_subscribeToTopic);
     on<MessageReceived>(_onMessageReceived);
   }
 
@@ -53,24 +52,6 @@ class MqttBloc extends Bloc<MqttEvent, MqttState> {
     } catch (e) {
       emit(MqttError('Connessione fallita: $e'));
       _client?.disconnect();
-    }
-  }
-
-
-  void _subscribeToTopic(SubscribeTopic event, Emitter<MqttState> emit) {
-    if (_client?.connectionStatus?.state == mqtt.MqttConnectionState.connected) {
-      _client!.subscribe(event.topic, mqtt.MqttQos.atMostOnce);
-
-      _client!.updates!.listen((List<mqtt.MqttReceivedMessage<mqtt.MqttMessage>>? c) {
-        final recMess = c![0].payload as mqtt.MqttPublishMessage;
-        final message =
-        mqtt.MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-        add(MessageReceived(message));
-      });
-
-      emit(MqttConnected());
-    } else {
-      emit(MqttError('Il client non è connesso.'));
     }
   }
 

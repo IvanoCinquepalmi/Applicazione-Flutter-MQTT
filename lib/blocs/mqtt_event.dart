@@ -25,12 +25,3 @@ class MessageReceived extends MqttEvent {
   @override
   List<Object?> get props => [message];
 }
-
-class SubscribeTopic extends MqttEvent {
-  final String topic;
-
-  SubscribeTopic(this.topic);
-
-  @override
-  List<Object?> get props => [topic];
-}
